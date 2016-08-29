@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="mainCanvas" width=300px height=300px style="border:1px solid #c3c3c3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+//everything except for the actual drawing is done assuming the origin is located in the lower-left corner of the canvas.
+//This is because I am porting over this code from Lua and don't want to change the formulas while porting; too much room for error.
+
+//makes setting default values easier. Later, when I can actually use ES6, I can just use default values.
+function defVal(arg, val) { return typeof arg !== 'undefined' ? arg : val; }
+
+//lineColor defaults to blue
+//pointColor defaults to green
+function TwoDimGrapher(canvasID, axesZero,  xpix, ypix, lineColor, showPoints, pointColor, showLines, equation, deltax, deltaMode, lineWidth, pointRadius){
+    this.canvasId = canvasID; //just to save it
+    this.canvas = document.getElementById(canvasID);
+    this.zero = defVal(axesZero, [0, 0]);
+    this.xpix = defVal(xpix, 10);
+    this.ypix = defVal(ypix, 10);
+    this.lineColor = defVal(lineColor, "#0000FF");
+    this.showPoints = defVal(showPoints, true);
+    this.pointColor = defVal(pointColor, "#00FF00");
+    this.showLines = defVal(showLines, true);
+    this.equation = defVal(equation, "x");
+    this.deltax = defVal(deltax, 1);
+    this.deltaMode = defVal(deltaMode, "pix");
+    this.lineWidth = defVal(lineWidth, 5);
+    this.pointRadius = defVal(pointRadius, 1);
+}
+
+TwoDimGrapher.prototype.graph = function(equation, lineColor, pointColor, canvas) {
+    equation = defVal(equation, this.equation);
+    lineColor = defVal(lineColor, this.lineColor);
+    pointColor = defVal(pointColor, this.pointColor);
+    canvas = defVal(canvas, this.canvas);
+    var myDelta = this.deltax;
+    if (this.deltaMode=="pix"){ // if the change in x is in pixels, convert it into units based on the function
+        myDelta = this.deltax/this.xpix;
+    }
+    var xmin = -this.zero[0]/this.xpix; //the min x value on the canvas
+    var xmax = xmin+this.canvas.width/this.xpix;
+    var curx = xmin-xmin%myDelta-myDelta; // get the first x value off the left of the screen that's an even multiple of deltax in case a user wants to specify deltax in order to catch bad points (like to catch the gap in "x/x" when x=0)
+    //running it once so that I'm not doing a constant check
+    var prevPoint = [curx, this.getY(curx, equation)]; // a failed this.getY() should return null
+    if (this.showPoints) {
+        this.drawPoint(prevPoint, pointColor);
+    }
+    while (curx<=xmax) { //want to do one point past the end so that the lines go off the canvas
+        curx+=myDelta;
+        var curPoint = [curx, this.getY(curx, equation)];
+        if (this.showPoints) {
+            this.drawPoint(curPoint, pointColor);
+            if (this.showLines) {
+                this.drawLine(prevPoint, curPoint, lineColor);
+            }
+            prevPoint = [curPoint[0], curPoint[1]]; // just copying the array
+        }
+    }
+};
+
+TwoDimGrapher.prototype.noNulls = function(pt){
+    if (pt[0]==null || pt[1]==null){
+        return false;
+    } else {
+        return true;
+    }
+}; 
+
+TwoDimGrapher.prototype.convertGraphToCanvas = function(pt){
+        return this.convertLuaScreenToCanvas(this.convertGraphToScreen(pt));
+};
+
+TwoDimGrapher.prototype.convertGraphToScreen = function(pt){
+    return [this.zero[0]+pt[0]*this.xpix, this.zero[1]+pt[1]*this.ypix];
+};
+
+TwoDimGrapher.prototype.convertLuaScreenToCanvas = function(pt){
+    return [pt[0], this.canvas.height-pt[1]]; // changing the origin from top-left to bottom-left
+};
+    
+TwoDimGrapher.prototype.drawPoint = function(pt, clr, pointRad){
+    clr = defVal(clr, this.pointColor);
+    pointRad = defVal(pointRad, this.pointRadius);
+    if (this.noNulls(pt)){
+        var graphPoint = this.convertGraphToCanvas(pt);
+        var x = graphPoint[0],
+            y = graphPoint[1];
+        var ctx = this.canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.arc(x,y,pointRad,0,2*Math.PI); //draw a circle at the specified point with the specified color
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = clr;
+        ctx.stroke();
+        ctx.fillStyle = clr;
+        ctx.fill();
+    }
+};
+
+TwoDimGrapher.prototype.drawLine = function(pt1, pt2, clr, lineWidth){
+    defVal(clr, this.lineColor);
+    defVal(lineWidth, this.lineWidth);
+    if (this.noNulls(pt1) && this.noNulls(pt2)) {
+        var gp1 = this.convertLuaScreenToCanvas(this.convertGraphToScreen(pt1)),
+            gp2 = this.convertLuaScreenToCanvas(this.convertGraphToScreen(pt2));
+        var x1 = gp1[0],
+            y1 = gp1[1],
+            x2 = gp2[0],
+            y2 = gp2[1];
+            
+        var ctx = this.canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = clr;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+  }
+};
+
+TwoDimGrapher.prototype.getY = function(xval, equation){
+    defVal(equation, this.equation);
+    //TODO I don't know what JavaScript does if something is divided by zero... So there's some error catching here that I'm just going to leave out for now.
+    var formula = equation.replace(/x/g, xval);
+    return eval(formula); //should be using math.eval or something like that TODO
+};
+
+var g = new TwoDimGrapher("mainCanvas");
+g.zero = [g.canvas.width/2, g.canvas.height/2];
+g.graph("Math.pow(x, 3)"); //this is what it's actually graphing
+</script>
+
+</body>  
+</html>

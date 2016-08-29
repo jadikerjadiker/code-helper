@@ -1,0 +1,12 @@
+June 4, 2016
+Okay, so this is a place where I can type up my thoughts about the Code Helper as a whole. I'll try to date stuff as I go.
+
+This idea came about as I began to realize two things:
+1. How often I'm typing the exact same code with maybe some variable or number changes
+2. How often I'm typing something into google, looking at the first couple results, using one, seeing if it works, and trying another if it doesn't.
+
+The goal of the code helper is essentially to aid a programmer in doing these tasks.
+
+
+June 10, 2016
+Really, when I think of this, I think of it as being in a simple code editor, with some easy options to access it.

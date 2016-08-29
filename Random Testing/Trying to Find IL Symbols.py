@@ -1,0 +1,16 @@
+"_--0-- writing some base code here --_" #looks long at the start
+"_-_0_ writing some base code here --_" #seems arbitrary and confusing
+"_--0 writing some base code here --_" #hard to see
+"_--0| writing some base code here --_" #extrememly hard to type
+"_-_0_ writing some base code here -_-" #grimace
+"_-0- writing some base code here --_" #this is good, it makes visual sense, isn't too hard to type, and doesn't have any special meaning
+"_-second test- writing some base code here --_" #here though it's not obvious...
+"_--second test- writing some base code here --_" #looks weird...
+"_--second test_ writing some base code here --_" #looks like it's missing something
+"_--another test> writing some base code here <--_" #ooh...
+"_-another test> writing some base code here <-_" #the one above is easier to see
+#why aren't I just using the system programmers already know in HTML with tags?
+#I don't want to have to follow the same crazy tag rules... And I want it to stand out.
+#but in a way it would be easier to teach, and it would blend in well and not look so strange or complicated...
+"<another test> writing some base code here </another test>" #oh... cause I don't want to type in the name everytime for the closing
+"<another test> writing some base code here </>" #so maybe I just don't...

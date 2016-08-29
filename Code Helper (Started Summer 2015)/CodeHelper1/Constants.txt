@@ -1,0 +1,15 @@
+Version 0.0
+
+Item Name Symbol:Item Name:
+Item Symbol:Item
+
+New Section Symbol:### New Section ###
+Format End
+-------------------------------
+This should pretty much be ignored.
+______________________________
+Info Start
+
+(That little thing at the top tells the computer how to understand this... or at least that's the idea)
+
+### Input Level Symbols ###

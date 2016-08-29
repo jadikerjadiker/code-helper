@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<!--
+Does not work because the screen doesn't refresh while drawing.
+<p id="loading">Loading...</p>
+-->
+
+<canvas id="myCanvas" width=600px height=600px style="border:1px solid #c3c3c3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+//I could totally do this with an object too, where each of the specifications was done as property, and you set it up (it came with defaults)
+
+/***********Prime Functions************/
+
+//All extra parameters are passed in one array at the end
+function getPrimes(max) {
+    //console.log("getting primes");
+    var sieve = [], i, j, primes = [];
+    for (i = 2; i <= max; ++i) {
+        if (!sieve[i]) {
+            // i has not been marked -- it is prime
+            primes.push(i);
+            for (j = i << 1; j <= max; j += i) {
+                sieve[j] = true;
+            }
+        }
+    }
+    //console.log("got primes:");
+    //console.log(primes);
+    return primes;
+}
+
+/***********Computation Functions************/
+
+
+function computeNextG(array) {
+    //console.log("computeNextG started");
+    var ans = [];
+    //console.log("array");
+    //console.log(array);
+    //console.log("array length");
+    //console.log(array.length);
+    for (var i = 0; i < array.length-1; i++) {
+        //console.log(i);
+        ans.push(Math.abs(array[i] - array[i+1]));
+    }
+    //console.log("computeNextG about to end");
+    return ans;
+}
+
+function computeAllGs(initArray) {
+    //console.log("computeAllGs started");
+    var ans = [initArray];
+    for (var i = 0; i<initArray.length; i++) {
+        ans.push(computeNextG(ans[ans.length-1]));
+    }
+    //console.log("compute all Gs is returning: ");
+    //console.log(ans);
+    return ans;
+}
+
+
+function compute2s(array) {
+    var counter = 0;
+    for (var i = 0; i<array.length; i++) {
+        if (array[i]==2) {
+            counter+=1;
+        }
+    }
+    return counter;
+}
+
+
+/***********Drawing Functions************/
+
+function drawPix(cxt, x, y, myColor, w, h) {
+    //console.log("drawPix run")
+    //console.log("drawing pixel at x: "+x+"and y: "+y)
+    ctx.fillStyle = myColor;
+    cxt.fillRect(x, y, w, h);
+}
+
+function drawRow(cxt, colors, rowNum, w, h, offsetPerRowNum) {
+    for (var i = 0; i<colors.length; i++) {
+        var color = colors[i];
+        drawPix(cxt, i*w+offsetPerRowNum*rowNum, rowNum*h, color, w, h);
+    }
+}
+
+function pyramidDrawAll(cxt, bigArray, w, h) {
+    //console.log("pyr draw")
+    //console.log("bigArray")
+    //console.log(bigArray)
+    //console.log("w is "+w+" and h is "+h)
+    for (var i = 0; i<bigArray.length; i++) {
+        var row = bigArray[i];
+        drawRow(cxt, row, i, w, h, .5*w);
+    }
+}
+
+function origRightTriangle(cxt, bigArray, w, h) {
+    for (var i = 0; i<bigArray.length; i++) {
+        var row = bigArray[i];
+        drawRow(cxt, row, i, w, h, 0);
+    }
+}
+
+
+/***********Conversion Functions************/
+
+//array: a big array
+//colorPixFunc: a function that converts a number into a color
+function arrayToColor(array, colorPixFunc) {
+    //console.log("arrayToColor started");
+    var ans = [];
+    var minians =[];
+    var thisRow = [];
+    //get all the rows
+    for (var i = 0; i < array.length; i++) {
+        //go through all the rows
+        thisRow = array[i];
+        minians = [];
+        for (var j = 0; j < thisRow.length; j++) {
+            minians.push(colorPixFunc(thisRow[j]));
+        }
+        ans.push(minians);
+    }
+    //console.log("arrayToColor finished");
+    return ans;
+}
+
+/***********Useable Runners************/
+//WARNING! THESE FUNCTIONS OFTEN MODIFY THE ARRAYS GIVEN TO THEM
+
+//The two functions below this are meant for the user. They allow the programmer to specify what
+//major functions they want to use to run the program.
+
+//fullArray: the big array
+//colorConverter: converts the big array into a big array of colors
+//drawer: draws a big array on the screen
+function drawWithParams(fullArray, colorConverter, ctx, drawer, w, h) {
+    //console.log("drawWithParams started");
+    w = w || 5;
+    h = h || 5;
+    //console.log("about to draw with params");
+    drawer(ctx, colorConverter(fullArray), w, h);
+}
+
+//usually called with convertAndDrawWithParams(someBigPrimeArray, arrayToJoshColor, pyramidDraw)
+//initArray: initial array to do all the computations from
+//colorConvertFunc: function to convert the entire big array into colors
+//drawFunc: a function that only takes an array of colors and draws that array
+function convertAndDrawWithParams(initArray, colorConvertFunc, ctx, drawFunc, w, h) {
+    //console.log("convertAndDrawWithParams started");
+    drawWithParams(computeAllGs(initArray), colorConvertFunc, ctx, drawFunc, w, h);
+    //console.log("convertAndDrawWithParams ended");
+}
+
+function sizeConvertAndDrawWithParams(initArray, bigArrayToColorFunc, canvasID, drawBigColorsFunc, w, h) {
+    var canvas = document.getElementById(canvasID);
+    var ctx = canvas.getContext("2d");
+    var bigArray = computeAllGs(initArray);
+    var bigArrayLength = bigArray.length;
+    canvas.width = bigArrayLength*w;
+    canvas.height = bigArrayLength*h;
+    drawWithParams(bigArray, bigArrayToColorFunc, ctx, drawBigColorsFunc, w, h);
+}
+
+//this function is less user-modifiable. It has a lot of specifications built into it, such as how the drawRowFunc is called.
+//On the other hand, it uses less memory and allows you do things with each row.
+function drawLineByLine(initArray, rowToColorFunc, canvasID, drawRowFunc, w, h, percentOffsetPerRow, logPercentDone){
+    var initArrayLength = initArray.length;
+    var canvasWidth = initArrayLength*w;
+    var canvasHeight = initArrayLength*h;
+    if (canvasWidth>32767 || canvasHeight>32767 || canvasHeight*canvasWidth>268435456) {
+        console.log("Warning: Drawing may be too big for canvas!");
+    }
+    var canvas = document.getElementById(canvasID);
+    var ctx = canvas.getContext("2d");
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    var iter = 1;
+    var pctChange = 100/initArrayLength; //how many percent points it gets closer to finishing with each new line it does
+    var pctDone = 0;
+    var lastPctDone = 0;
+    var lastDone = initArray;
+    var colors;
+    while (lastDone.length>0){
+        colors = rowToColorFunc(lastDone);
+        drawRowFunc(ctx, colors, iter-1, w, h, percentOffsetPerRow*w);
+        lastDone = computeNextG(lastDone);
+        pctDone+=pctChange;
+        //console log how far done it is. It logs everytime it gets logPercentDone more percent done.
+        if (logPercentDone && pctDone>lastPctDone+logPercentDone){
+            lastPctDone = Math.floor(pctDone/logPercentDone)*logPercentDone;
+            console.log("More than "+lastPctDone+"% done.");
+            //Doesn't work because the screen does not refresh while drawing
+            //document.getElementById("loading").innerHTML = "Loading..."+lastPctDone+"%";
+        }
+        iter+=1;
+    }
+    //Doesn't work because the screen does not refresh while drawing
+    //document.getElementById("loading").innerHTML="";
+}   
+
+/***********Josh Coloring************/
+
+//converts one row to a color
+function convertRowToJoshColor(array) {
+    var ans = [];
+    for (var i = 0; i<array.length; i++) {
+        var v = array[i];
+        ans.push(numToJoshColor(v));
+    }
+    return ans;
+}
+
+function numToJoshColor(v) {
+    var theColor;
+    if (v==0) {
+        theColor = "#000000"; //black
+    }
+    else if (v===2){
+        theColor = "#FFFF00"; //yellow
+    }
+    else if (v%2==1){
+        theColor = "#FF0000"; //red
+        
+    }
+    else{
+        theColor = "#0000FF"; //blue
+    }
+    return theColor;
+}
+
+function numArrayToJoshColor(array) {
+    //console.log("numArrayToJoshColor started");
+    //console.log("numArrayToJoshColor about to end");
+    return arrayToColor(array, numToJoshColor);
+}
+
+/*******Runner*********/
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+console.log("Loading...");
+//initArray, rowToColorFunc, canvasID, drawRowFunc, w, h, offsetPerRowNum
+drawLineByLine(getPrimes(30000), convertRowToJoshColor,  "myCanvas", drawRow, .5, .5, .5, 5);
+console.log("Done. (It may take some time to actually display)");
+</script>
+
+</body>
+</html>
