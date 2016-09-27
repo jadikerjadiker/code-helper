@@ -74,7 +74,6 @@ def _():
     
     #checking to make sure the function is runnable
     try:
-        _ = None #just to get rid of the IDE thinking that _ doesn't exist.
         funcName = re.search(r"def[ ]+?(\S+?)[ ]*?\(.*\)", inputText).group(1)
         exec(inputText) #this is very very dangerous
         exec('_ = '+funcName)
