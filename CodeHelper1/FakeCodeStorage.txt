@@ -1,0 +1,16 @@
+Version 0.0
+
+Item Name Symbol:Item Name:::
+Item Symbol:Item
+
+FORMAT END
+
+INFO START
+
+say hello:::
+<il0>print("Hello!")</>
+
+say goodbye:::
+<il0>print("G'bye!")</>
+
+loop $^1^$:::

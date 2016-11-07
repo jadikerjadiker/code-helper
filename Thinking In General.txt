@@ -1,0 +1,53 @@
+June 4, 2016
+Okay, so this is a place where I can type up my thoughts about the Code Helper as a whole. I'll try to date stuff as I go.
+
+This idea came about as I began to realize two things:
+1. How often I'm typing the exact same code with maybe some variable or number changes
+2. How often I'm typing something into google, looking at the first couple results, using one, seeing if it works, and trying another if it doesn't.
+
+The goal of the code helper is essentially to aid a programmer in doing these tasks.
+
+
+June 10, 2016
+Really, when I think of this, I think of it as being in a simple code editor, with some easy options to access it.
+
+Sept. 15, 2016
+I just figured out a way to make it a simple code editor.
+You can code it on Cloud9, and be running a Python program that will consistently look at the last version you saved and edit it.
+So if you have a for(3), it will change that into for(int i = 0; i = 3; i++)
+The only question then is how to train it, and how to get it to call those commands
+
+October 29, 2016
+Here is the theory behind the code helper:
+1. Computers can follow instructions.
+2. Anything you want to be done can be written out as instructions (flow control is something I have to figure out)
+3. Iff a computer can complete the task you want it to, the instructions are able to be broken-down into other sets of instructions which...
+    can themselves be broken down, etc. until all of the tasks are tasks a computer inherently knows how to do.
+    (The actual tasks a computer inherently knows how to do are those of a Turing Machine, but I generally assume
+    a higher level of sophistication as inherent. In my case, the inherent knowledge is generally Python)
+    
+For example, if I want the computer to do
+1. print the word hello
+I can break that down into
+1. print("hello")
+
+Or, in another similar but more advanced example,
+1. print the sum of all the values in the following list: 1, 2, 3, 4
+I can break that down into
+1.1. Add 1, 2, 3, and 4 
+1.2. print the result of step(1.1)
+which can be broken down to
+1.1.1. 1+2+3+4
+1.2 print the result of step 1.1
+which can be broken down to
+1.2.1 print(10)
+
+There are two issues though:
+1. Getting the computer to understand patterns.
+
+For example, It's difficult to tell the computer "print <some word here>" means print(<insert that word here>)
+Functions are actually the closest to this.
+
+2. Getting the computer to look at the entire problem and optimize earlier steps based on future steps.
+
+The trick is in getting the code helper to recognize patterns.
