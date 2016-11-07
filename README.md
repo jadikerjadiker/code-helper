@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
      ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
     '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
@@ -16,3 +17,7 @@ http://www.youtube.com/user/c9ide.
 
 Happy coding!
 The Cloud9 IDE team
+=======
+# code-helper
+A place for me to work on my code helper
+>>>>>>> b79fbb10d1e198b9a2066566a0e0988b9c79f12f
