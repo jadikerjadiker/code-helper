@@ -51,3 +51,63 @@ Functions are actually the closest to this.
 2. Getting the computer to look at the entire problem and optimize earlier steps based on future steps.
 
 The trick is in getting the code helper to recognize patterns.
+
+
+
+November 7, 2016
+So, I've realized that you can probably teach the computer to do loops if it
+1. Has access to its previous steps.
+2. Can follow an infinite amount of steps.
+3. Can understand if statements
+
+Then a while loop can be defined. For example
+
+i=0
+while i<5:
+    print(i)
+    i+=1
+    
+
+can be translated as
+1. i=0
+2. print(i)
+3. i+=1
+4. if i<5, go to step 2, else continue
+
+or
+
+1. i=0
+2. print(i)
+3. i+=1
+4. if i<5
+    4.1 print(i)
+    4.2 i+=1
+    4.3 if i<5
+        ...
+but that gets really compicated and actually also requires an infinite amount of ifs.
+
+So here's another way, that's kinda a combo of the two and may work better:
+1. i=0
+2. print(i)
+3. i+=1
+4. if i<5, follow steps 2, 3, and then 4. Else, follow step 5.
+
+This does not require the computer to necesarily follow the steps one by one, which makes it..
+more versatile while also making it clear what's being done.
+
+But at the same time, it kinda does because the only way the computer
+knows what to do after 5 is if it knows it should go to 6.
+
+A for loop could be written
+
+for (int i=0; i<9; i++) {
+    System.out.println(i);
+}
+
+Which could be interpreted as:
+1. i=0
+2. if i<9, do 
+
+Meh, not going to finish this. Long story short, it looks like the computer needs to be able
+to follow a series of instructions, go back to a particular instruction, and evaluate if statements
+and follow different paths based on an evaluation.
